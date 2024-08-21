@@ -1,69 +1,73 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contador</title>
+    <title>Contador de Tempo sem Nicotina</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
+            background-color: #f0f0f0;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
         }
-        #timer {
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        #contador {
             font-size: 2em;
             margin-top: 20px;
+            color: #555;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
+
 <body>
-    <h1>Contador de Tempo</h1>
-    <div id="timer">Carregando...</div>
+    <h1>Contador de Tempo sem Nicotina</h1>
+    <p>Iniciando a partir de:</p>
+    <div id="contador">0 dias 0 horas 0 minutos 0 segundos</div>
+
     <script>
-        const apiUrl = 'https://your-backend-url.com/api'; // Substitua pela URL do seu backend
+        // Define a data inicial específica
+        const dataInicial = new Date('2024-08-20T14:00:00'); // Data e hora desejadas
 
-        async function fetchSavedTime() {
-            try {
-                const response = await fetch(`${apiUrl}/get-time`);
-                const data = await response.json();
-                return data.savedTime;
-            } catch (error) {
-                console.error('Erro ao buscar o tempo:', error);
-                return Date.now(); // Retorne a hora atual se houver um erro
-            }
-        }
+        function atualizarContador() {
+            const agora = new Date();
+            const diferenca = agora - dataInicial;
 
-        async function updateSavedTime(time) {
-            try {
-                await fetch(`${apiUrl}/set-time`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ savedTime: time }),
-                });
-            } catch (error) {
-                console.error('Erro ao atualizar o tempo:', error);
-            }
-        }
-
-        async function startTimer() {
-            let savedTime = await fetchSavedTime();
-
-            function updateTimer() {
-                const currentTime = new Date().getTime();
-                const elapsedTime = currentTime - savedTime;
-                const days = Math.floor(elapsedTime / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((elapsedTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
-
-                document.getElementById('timer').textContent = `${days}:${hours}:${minutes}:${seconds}`;
-                updateSavedTime(savedTime); // Atualizar o tempo salvo
+            if (diferenca < 0) {
+                document.getElementById('contador').textContent = 'Data inválida ou no futuro.';
+                return;
             }
 
-            setInterval(updateTimer, 1000);
+            const dias = Math.floor(diferenca / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((diferenca % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutos = Math.floor((diferenca % (1000 * 60 * 60)) / (1000 * 60));
+            const segundos = Math.floor((diferenca % (1000 * 60)) / 1000);
+
+            document.getElementById('contador').textContent = `${dias} dias ${horas} horas ${minutos} minutos ${segundos} segundos`;
         }
 
-        startTimer();
+        setInterval(atualizarContador, 1000); // Atualiza o contador a cada segundo
     </script>
 </body>
+
 </html>
