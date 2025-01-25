@@ -1,73 +1,118 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contador de Tempo sem Nicotina</title>
+    <title>Sorteador de Bingo</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            color: #333;
+        body { 
+            font-family: 'Arial', sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+            background-color: #f4f4f4; 
+        }
+        .container { 
+            text-align: center; 
+            background-color: white; 
+            padding: 40px; 
+            border-radius: 15px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 400px;
+        }
+        #resultado { 
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
-            height: 100vh;
-            margin: 0;
+            align-items: center;
+            font-size: 72px; 
+            margin: 20px 0; 
         }
-
-        h1 {
-            font-size: 2.5em;
-            margin-bottom: 20px;
-        }
-
-        p {
-            font-size: 1.2em;
-            margin-bottom: 10px;
-        }
-
-        #contador {
-            font-size: 2em;
-            margin-top: 20px;
-            color: #555;
-            background-color: #fff;
-            padding: 20px;
+        #letra {
+            color: white;
+            padding: 10px 20px;
             border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            margin-right: 15px;
+            font-weight: bold;
+        }
+        #numero {
+            color: black;
+        }
+        button { 
+            background-color: #4CAF50; 
+            border: none; 
+            color: white; 
+            padding: 15px 32px; 
+            text-align: center; 
+            text-decoration: none; 
+            display: inline-block; 
+            font-size: 16px; 
+            margin: 10px 0; 
+            cursor: pointer; 
+            border-radius: 5px; 
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #sorteados {
+            margin-top: 20px;
+            max-height: 150px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 10px;
         }
     </style>
 </head>
-
 <body>
-    <h1>Contador de Tempo sem Nicotina</h1>
-    <p>Tempo do bobão sem nicotina:</p>
-    <div id="contador">0 dias 0 horas 0 minutos 0 segundos</div>
-    <h1>CRIA VERGONHA!!!! te amo</h1>
-
+    <div class="container">
+        <h1>Sorteador de Bingo</h1>
+        <div id="resultado">
+            <div id="letra">-</div>
+            <div id="numero">-</div>
+        </div>
+        <button onclick="sortearNumero()">Sortear Número</button>
+        <div id="sorteados"></div>
+    </div>
 
     <script>
-        function iniciarContador() {
-            // Data e hora fixas para o início do contador
-            const dataInicio = new Date('2024-08-20T14:00:00');
+        let numerosSorteados = new Set();
+        const maxNumero = 75;
 
-            setInterval(() => {
-                const agora = new Date();
-                const diferenca = agora - dataInicio;
-
-                const dias = Math.floor(diferenca / (1000 * 60 * 60 * 24));
-                const horas = Math.floor((diferenca % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutos = Math.floor((diferenca % (1000 * 60 * 60)) / (1000 * 60));
-                const segundos = Math.floor((diferenca % (1000 * 60)) / 1000);
-
-                document.getElementById('contador').textContent = `${dias} dias ${horas} horas ${minutos} minutos ${segundos} segundos`;
-            }, 1000);
+        function obterLetra(numero) {
+            if (numero >= 1 && numero <= 15) return {letra: 'B', cor: '#FF6B6B'};
+            if (numero >= 16 && numero <= 30) return {letra: 'I', cor: '#4ECDC4'};
+            if (numero >= 31 && numero <= 45) return {letra: 'N', cor: '#45B7D1'};
+            if (numero >= 46 && numero <= 60) return {letra: 'G', cor: '#FFA07A'};
+            if (numero >= 61 && numero <= 75) return {letra: 'O', cor: '#C7F464'};
         }
 
-        // Inicia o contador automaticamente quando a página carrega
-        window.onload = iniciarContador;
+        function sortearNumero() {
+            const numeroSorteadosEl = document.getElementById('sorteados');
+            const letraEl = document.getElementById('letra');
+            const numeroEl = document.getElementById('numero');
+
+            if (numerosSorteados.size === maxNumero) {
+                alert('Todos os números já foram sorteados!');
+                return;
+            }
+
+            let novoNumero;
+            do {
+                novoNumero = Math.floor(Math.random() * maxNumero) + 1;
+            } while (numerosSorteados.has(novoNumero));
+
+            numerosSorteados.add(novoNumero);
+            
+            const {letra, cor} = obterLetra(novoNumero);
+            letraEl.textContent = letra;
+            letraEl.style.backgroundColor = cor;
+            numeroEl.textContent = novoNumero;
+
+            let listaSorteados = Array.from(numerosSorteados).sort((a, b) => a - b);
+            numeroSorteadosEl.innerHTML = `Números sorteados: ${listaSorteados.join(', ')}`;
+        }
     </script>
 </body>
-
 </html>
